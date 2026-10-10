@@ -1,0 +1,2 @@
+i need to run my test for the insertion of data. This test must be an end- to end- that is , create the db connection, call the function that inserts. I need a single entry point for this test.
+1. creare a file that runs this test- give it an appropriare name and give the cmd to run it
