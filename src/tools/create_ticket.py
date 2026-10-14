@@ -12,7 +12,7 @@ from src.common.db import get_db_connection
 def create_ticket(
     category: str,
     description: str,
-    house_id: int | None = None,
+    house_address: str,
     priority: str | None = None,
     status: str | None = None,
     reported_by: str | None = None,
@@ -24,7 +24,7 @@ def create_ticket(
         category: Required ticket category, limited to the table's 50-character
             column size.
         description: Required description of the maintenance issue.
-        house_id: Optional ID of the related house; must exist in ``houses``.
+        house_address: Address of the house associated with the ticket.
         priority: Optional priority; omitted values use the database default.
         status: Optional status; omitted values use the database default.
         reported_by: Optional name of the person reporting the issue.
@@ -35,7 +35,7 @@ def create_ticket(
 
     Raises:
         ValueError: If a required string is empty, the category is too long, or
-            ``house_id`` is not an integer.
+            ``house_address`` is empty or not a string.
         psycopg.Error: If PostgreSQL rejects the insert or the connection fails.
         RuntimeError: If PostgreSQL does not return the inserted row.
     """
@@ -49,15 +49,14 @@ def create_ticket(
     if not isinstance(description, str) or not description.strip():
         logging.info("Ticket creation rejected: description is missing or empty.")
         raise ValueError("description must be a non-empty string.")
-    if house_id is not None and type(house_id) is not int:
-        logging.info("Ticket creation rejected: house_id is not an integer.")
-        raise ValueError("house_id must be an integer or None.")
+    if not isinstance(house_address, str) or not house_address.strip():
+        logging.info("Ticket creation rejected: house address is missing or empty.")
+        raise ValueError("house_address must be a non-empty string.")
 
     # Column names come only from this fixed list; all ticket values are parameters.
-    columns = ["category", "description"]
-    values: list[Any] = [category, description]
+    columns = ["category", "description", "house_address"]
+    values: list[Any] = [category, description, house_address]
     optional_fields = (
-        ("house_id", house_id),
         ("priority", priority),
         ("status", status),
         ("reported_by", reported_by),
@@ -94,6 +93,7 @@ def create_ticket(
         logging.info("Ticket insert completed without a returned row.")
         raise RuntimeError("The database did not return the inserted ticket.")
     logging.info("Ticket inserted successfully.")
+    # Return a dictionary keyed by column name for the inserted ticket.
     return dict(ticket)
 
 
@@ -111,7 +111,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Create a maintenance ticket.")
     parser.add_argument("--category", required=True, help="Ticket category")
     parser.add_argument("--description", required=True, help="Ticket description")
-    parser.add_argument("--house-id", type=int, help="Related house ID")
+    parser.add_argument(
+        "--house-address",
+        required=True,
+        help="House address",
+    )
     parser.add_argument("--priority", help="Ticket priority (defaults to medium)")
     parser.add_argument("--status", help="Ticket status (defaults to open)")
     parser.add_argument("--reported-by", help="Name of the person reporting the ticket")
@@ -121,14 +125,17 @@ def main() -> None:
     ticket = create_ticket(
         category=args.category,
         description=args.description,
-        house_id=args.house_id,
+        house_address=args.house_address,
         priority=args.priority,
         status=args.status,
         reported_by=args.reported_by,
         assigned_to=args.assigned_to,
     )
     logging.info("Ticket creation command-line tool completed successfully.")
-    print(f"Created ticket {ticket['id']}.")
+    print(
+        f"Created ticket {ticket['id']} for house "
+        f"{ticket['house_id']} ({ticket['house_address']})."
+    )
 
 
 if __name__ == "__main__":
