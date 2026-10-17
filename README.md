@@ -29,6 +29,25 @@ Install dependencies with:
 python -m pip install -r requirements.txt
 ```
 
+## Run the MCP server
+
+Start the HTTP server from the project root:
+
+```powershell
+python -m src.main
+```
+
+The MCP endpoint uses Streamable HTTP at `http://localhost:8000/mcp`. The
+readiness endpoint is `http://localhost:8000/health`; it checks PostgreSQL and
+returns HTTP 503 if the database is unavailable. Set `MCP_HOST` and
+`MCP_PORT` (or `PORT`) to configure the listener.
+
+For Google ADK, configure an `McpToolset` with the MCP endpoint URL. For example,
+the Python ADK client can connect using `StreamableHTTPConnectionParams` with
+`url="http://<server-host>:8000/mcp"`. Make the listener reachable to the ADK
+deployment and protect externally exposed deployments with an authenticated
+gateway or equivalent network access control.
+
 ## Create a ticket
 
 The shared PostgreSQL connection function is `get_db_connection` in
@@ -60,6 +79,24 @@ Run only the end-to-end ticket insertion test with its single entry point:
 
 ```powershell
 python -m test.run_ticket_insert_e2e
+```
+
+Test the running MCP service through the official MCP client SDK. Start
+`python -m src.main` in one terminal, then opt in to this live test from another
+terminal. It connects to the server, discovers `create_ticket`, calls it, and
+checks the returned ticket. This inserts a real ticket and leaves it in the
+database:
+
+```powershell
+$env:RUN_MCP_E2E = "1"
+python -m unittest test.test_mcp_client_integration -v
+```
+
+Set `MCP_SERVER_URL` if the server is not at
+`http://127.0.0.1:8000/mcp`:
+
+```powershell
+$env:MCP_SERVER_URL = "http://localhost:8000/mcp"
 ```
 
 The integration tests use the project `.env` and connect to
