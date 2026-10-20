@@ -20,7 +20,7 @@ RUN_MCP_E2E = os.getenv("RUN_MCP_E2E") == "1"
 class MCPClientIntegrationTests(unittest.TestCase):
     def test_client_calls_create_ticket_tool_on_running_server(self) -> None:
         """Discover and invoke the tool through the MCP Streamable HTTP client."""
-        category = "integration-test"
+        category = "Seun integration-test"
         description = f"Automated MCP client integration check {uuid4()}."
         house_address = "3409 New Towne."
         priority = "low"
