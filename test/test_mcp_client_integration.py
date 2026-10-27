@@ -9,7 +9,7 @@ from uuid import uuid4
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
-MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://127.0.0.1:8000/mcp")
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://127.0.0.1:8002/mcp")
 RUN_MCP_E2E = os.getenv("RUN_MCP_E2E") == "1"
 
 
