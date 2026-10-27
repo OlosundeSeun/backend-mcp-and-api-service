@@ -37,14 +37,14 @@ Start the HTTP server from the project root:
 python -m src.main
 ```
 
-The MCP endpoint uses Streamable HTTP at `http://localhost:8000/mcp`. The
-readiness endpoint is `http://localhost:8000/health`; it checks PostgreSQL and
+The MCP endpoint uses Streamable HTTP at `http://localhost:8002/mcp`. The
+readiness endpoint is `http://localhost:8002/health`; it checks PostgreSQL and
 returns HTTP 503 if the database is unavailable. Set `MCP_HOST` and
 `MCP_PORT` (or `PORT`) to configure the listener.
 
 For Google ADK, configure an `McpToolset` with the MCP endpoint URL. For example,
 the Python ADK client can connect using `StreamableHTTPConnectionParams` with
-`url="http://<server-host>:8000/mcp"`. Make the listener reachable to the ADK
+`url="http://<server-host>:8002/mcp"`. Make the listener reachable to the ADK
 deployment and protect externally exposed deployments with an authenticated
 gateway or equivalent network access control.
 
@@ -93,10 +93,10 @@ python -m unittest test.test_mcp_client_integration -v
 ```
 
 Set `MCP_SERVER_URL` if the server is not at
-`http://127.0.0.1:8000/mcp`:
+`http://127.0.0.1:8002/mcp`:
 
 ```powershell
-$env:MCP_SERVER_URL = "http://localhost:8000/mcp"
+$env:MCP_SERVER_URL = "http://localhost:8002/mcp"
 ```
 
 The integration tests use the project `.env` and connect to

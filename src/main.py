@@ -91,8 +91,8 @@ def main() -> None:
     # Listen on all interfaces by default so remote agent deployments can reach it.
     host = os.getenv("MCP_HOST", "0.0.0.0")
     try:
-        # Prefer the service-specific port setting, then common PORT, then 8000.
-        port = int(os.getenv("MCP_PORT", os.getenv("PORT", "8000")))
+        # Prefer the service-specific port setting, then common PORT, then 8002.
+        port = int(os.getenv("MCP_PORT", os.getenv("PORT", "8002")))
     except ValueError as error:
         # Fail explicitly for invalid configuration instead of silently defaulting.
         raise ValueError("MCP_PORT or PORT must be an integer.") from error
