@@ -1,7 +1,55 @@
 .env
 .env.*
 !.env.example
+
+# Python bytecode
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Python packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg
+*.egg-info/
+installed.cfg
+
+# Virtual environments
 .venv/
+venv/
+env/
+ENV/
+
+# Test and type-check caches
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.ruff_cache/
+
+# Editors and operating systems
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
 /resource/
