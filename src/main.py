@@ -18,7 +18,12 @@ from starlette.routing import Route
 
 # Reuse the database connection and ticket insertion logic already used by the CLI.
 from src.common.db import get_db_connection
+from src.tools.count_tickets import (
+    count_tickets as get_ticket_count,
+    get_ticket as get_ticket_details,
+)
 from src.tools.create_ticket import create_ticket as insert_ticket
+from src.tools.get_tickets import get_tickets as get_matching_tickets
 
 # Use the module logger so failures can be reported without exposing credentials.
 logger = logging.getLogger(__name__)
@@ -26,7 +31,11 @@ logger = logging.getLogger(__name__)
 # Give connecting MCP clients a descriptive server name and purpose.
 mcp = FastMCP(
     "Maintenance Ticket Service",
-    instructions="Create maintenance tickets in the configured PostgreSQL database.",
+    instructions=(
+        "Create maintenance tickets, summarize counts by priority and status, "
+        "and retrieve ticket details or matching ticket records by ticket ID "
+        "or house ID."
+    ),
 )
 
 
@@ -52,6 +61,33 @@ def create_ticket(
         reported_by=reported_by,
         assigned_to=assigned_to,
     )
+
+
+# Register ticket counting as a callable MCP tool.
+@mcp.tool()
+def count_tickets() -> dict[str, Any]:
+    """Return ticket totals, priority/status counts, and each ID/house ID pair."""
+    return get_ticket_count()
+
+
+# Register ticket lookup by its ticket ID or generated house ID.
+@mcp.tool()
+def get_ticket(
+    ticket_id: int | None = None,
+    house_id: int | None = None,
+) -> dict[str, Any] | None:
+    """Return all available ticket fields for exactly one supplied identifier."""
+    return get_ticket_details(ticket_id=ticket_id, house_id=house_id)
+
+
+# Register retrieval of all ticket rows matching a supplied identifier.
+@mcp.tool()
+def get_tickets(
+    ticket_id: int | None = None,
+    house_id: int | None = None,
+) -> list[dict[str, Any]]:
+    """Return all matching ticket rows; provide ticket_id or house_id."""
+    return get_matching_tickets(ticket_id=ticket_id, house_id=house_id)
 
 
 # Expose service readiness separately from MCP tool operations.

@@ -63,6 +63,13 @@ generates `house_id`:
 python -m src.tools.create_ticket --category plumbing --description "The kitchen sink is leaking." --house-address "211 Biraj Ct." --reported-by Taylor
 ```
 
+The MCP server provides a `count_tickets` tool that returns the total number
+of tickets, counts grouped by priority and status, and a `tickets` list with
+each ticket's `id` and `house_id`. It also provides a `get_ticket` tool that
+returns all ticket fields when given either `ticket_id` or `house_id` (provide
+exactly one identifier). The `get_tickets` tool accepts the same identifiers
+and returns a list of all matching ticket rows.
+
 Run unit tests with:
 
 ```powershell
